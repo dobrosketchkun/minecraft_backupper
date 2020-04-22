@@ -72,10 +72,9 @@ def the_job(type):
 	elif type == 'auto':
 		text = 'Auto:\tBacking up '
 		post = '.zip'
-	else:
-		print('You can only use auto or hotkey')
-		exit()
 	global PATH
+	if BEEP:
+		winsound.Beep(300, 100)
 	now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	file_name = str(now) + '_' + PATH.split('\\')[-1] + post
 	file_name = file_name.replace(' ', '_').replace(':', '-')
@@ -120,13 +119,23 @@ while True:
 
 	if _now != time_to_act:
 		pass
-	elif _now == time_to_act:
+	if _now == time_to_act:
 		the_job('auto')
 		_time_to_act = _time_to_act + timedelta(seconds=INTERVAL)
 		time_to_act = _time_to_act.strftime("%Y-%m-%d %H:%M:%S")
 
-	if keyboard.is_pressed('ctrl') and keyboard.is_pressed(HOTKEY_SAVE):  
+
+
+	ctrl = keyboard.is_pressed('ctrl') 
+	save_key = keyboard.is_pressed(HOTKEY_SAVE)
+	exit_key = keyboard.is_pressed(HOTKEY_EXIT)
+	if keyboard.read_key() == 'ctrl' and keyboard.read_key() == HOTKEY_SAVE:
 		the_job('hotkey')
-	if keyboard.is_pressed('ctrl') and keyboard.is_pressed(HOTKEY_EXIT):
+	if keyboard.read_key() == HOTKEY_SAVE and keyboard.read_key() == 'ctrl':
+		the_job('hotkey')
+	if keyboard.read_key() == 'ctrl' and keyboard.read_key() == HOTKEY_EXIT:
+		print('Manual exit.')
+		break
+	if keyboard.read_key() == HOTKEY_EXIT and keyboard.read_key() == 'ctrl':
 		print('Manual exit.')
 		break
