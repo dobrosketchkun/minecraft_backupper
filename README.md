@@ -17,3 +17,7 @@
 This program will back up your minecraft world folder every XX minutes or seconds.    
 You can also use hotkeys for manual backing up and exit the program.   
 For setting it up you need to change config section in it.
+
+Also you can change a color preferences of the window according to this table:
+
+![image from https://github.com/delimitry/ascii_canvas](https://camo.githubusercontent.com/9b492e24c58619395b766acee20f2fe9feec46af/687474703a2f2f342e62702e626c6f6773706f742e636f6d2f2d34587356774c6b487157452f56547139647359783173492f4141414141414141416e772f5a753158703333307735412f73313630302f77696e646f77732e706e67 "image from https://github.com/delimitry/ascii_canvas")
