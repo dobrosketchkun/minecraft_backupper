@@ -9,13 +9,20 @@ import platform
 
 
 #### CONFIG
+BACKGROUND_COLOR = '1' #You can only use this values: 0 to 9, A, B, C, D, E, F'
+TEXT_COLOR = '7' #You can only use this values: 0 to 9, A, B, C, D, E, F'
 INTERVAL = 10
 MINUTES_OR_SECONDS = 'minutes' #minutes or seconds
 HOTKEY_SAVE = 'v' # ctrl + this key
 HOTKEY_EXIT = '/' # ctrl + this key
-PATH = r"" # insert a path (for instance r"C:\Users\username\AppData\Roaming\.minecraft\saves\MyWorld")
+PATH = r""
+# PATH = r"C:\Users\dobrosketchkun\AppData\Roaming\.minecraft\saves\totaly random world" # insert a path (for instance r"C:\Users\username\AppData\Roaming\.minecraft\saves\MyWorld")
 BEEP = True #if True will beep, if False will not
 ############
+
+assert int(hex(int('0x' + BACKGROUND_COLOR.upper(), 16)), 16) <= 15, 'You can only use this values: 0 to 9, A, B, C, D, E, F'
+assert int(hex(int('0x' + TEXT_COLOR.upper(), 16)), 16) <= 15, 'You can only use this values: 0 to 9, A, B, C, D, E, F'
+os.system('color ' + BACKGROUND_COLOR.upper() + TEXT_COLOR.upper())
 
 screen_text = '''
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
