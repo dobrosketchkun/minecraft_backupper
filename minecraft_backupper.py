@@ -1,3 +1,4 @@
+from datetime import timedelta 
 import os
 import zipfile
 import datetime
@@ -5,7 +6,7 @@ import time
 import winsound
 import keyboard 
 import platform
-import os
+
 
 #### CONFIG
 INTERVAL = 10
@@ -40,10 +41,15 @@ def screen_state_update(new):
 	global screen_state
 	screen_state += new
 
-
 def clear_screen():
 	command = "cls" if platform.system().lower()=="windows" else "clear"
 	os.system(command)
+
+def printed(text):
+	global screen_state
+	clear_screen()
+	screen_state_update(text)
+	print(screen_state)
 
 def beepboop(): # you can change the melody by changing freq and time in winsound.Beep(freq, time)
 	if BEEP:      # and smart use of time.sleep() 
@@ -59,82 +65,68 @@ def zipdir(path, ziph):
 		for file in files:
 			ziph.write(os.path.join(root, file))
 
-def the_job_hotkey():
+def the_job(type):
+	if type == 'hotkey':
+		text = 'Hotkey:\tBacking up '
+		post = '._hotkey.zip'
+	elif type == 'auto':
+		text = 'Auto:\tBacking up '
+		post = '.zip'
+	else:
+		print('You can only use auto or hotkey')
+		exit()
 	global PATH
 	now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	file_name = str(now) + '_' + PATH.split('\\')[-1] + '._hotkey.zip'
+	file_name = str(now) + '_' + PATH.split('\\')[-1] + post
 	file_name = file_name.replace(' ', '_').replace(':', '-')
-	_log = 'Hotkey: Backing up ' + file_name + '... '
-	clear_screen()
-	screen_state_update(_log)
-	print(screen_state)
+	_log = text + file_name + '... '
+	printed(_log)
 	zipf = zipfile.ZipFile(file_name, 'w', zipfile.ZIP_DEFLATED)
 	zipdir(PATH, zipf)
 	zipf.close()
 	beepboop()
-	clear_screen()
-	screen_state_update('Done.\n')
-	print(screen_state)
+	printed('\tDone.\n')
 
-def the_job_auto():
-	global PATH
-	now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	file_name = str(now) + '_' + PATH.split('\\')[-1] + '.zip'
-	file_name = file_name.replace(' ', '_').replace(':', '-')
-	_log = 'Auto: Backing up ' + file_name + '... '
-	screen_state_update(_log)
-	print(screen_state)
-	zipf = zipfile.ZipFile(file_name, 'w', zipfile.ZIP_DEFLATED)
-	zipdir(PATH, zipf)
-	zipf.close()
-	beepboop()
-	clear_screen()
-	screen_state_update('Done.\n')
-	print(screen_state)
 
 
 if MINUTES_OR_SECONDS == 'minutes':
-	_minutes_or_seconds = -2
+	timedel = lambda x: timedelta(minutes=x)
 elif MINUTES_OR_SECONDS == 'seconds':
-	_minutes_or_seconds = -1
+	timedel = lambda x: timedelta(seconds=x)
 else:
 	print('You can only use "minutes" or "seconds" for MINUTES_OR_SECONDS parameter')
 	exit()
 
-now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-now_s = now.split(':')[_minutes_or_seconds]
-_interval_list = [str(int(t) + int(now_s[_minutes_or_seconds])) for t in range (0, 59, INTERVAL)]
-interval_list = [('0' + _t) if len(_t) == 1 else _t for _t in _interval_list]
 
 ###
-clear_screen()
+now = datetime.datetime.now()
 
 _first_line = 'This program will back up your world "' + PATH.split('\\')[-1] +'" folder' +\
-		' every ' + str(INTERVAL) + ' ' + MINUTES_OR_SECONDS + ' from ' + now + '\n'
+		' every ' + str(INTERVAL) + ' ' + MINUTES_OR_SECONDS + ' from ' +\
+		now.strftime("%Y-%m-%d %H:%M:%S") + '\n'
+
 _second_line =  'You can use hotkeys Ctrl+' + HOTKEY_SAVE +\
 		' for manualy backing it up and Ctrl+' + HOTKEY_EXIT + ' for exit the program.\n\nLog:\n'
 
-screen_state_update(screen_text + _first_line + _second_line)
-print(screen_state)
+printed(screen_text + _first_line + _second_line)
 
 ###
 
-temp_time = None
-isZero = False
+_time_to_act = now + timedel(INTERVAL)
+time_to_act = _time_to_act.strftime("%Y-%m-%d %H:%M:%S")
+
 while True: 
 	_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	_now_s = _now.split(':')[_minutes_or_seconds]
 
-	if not isZero:
-		if _now_s in interval_list:
-			the_job_auto()
-			isZero = True
-			temp_time = _now
-	if _now != temp_time:
-		isZero = False
+	if _now != time_to_act:
+		pass
+	elif _now == time_to_act:
+		the_job('auto')
+		_time_to_act = _time_to_act + timedelta(seconds=INTERVAL)
+		time_to_act = _time_to_act.strftime("%Y-%m-%d %H:%M:%S")
 
 	if keyboard.is_pressed('ctrl') and keyboard.is_pressed(HOTKEY_SAVE):  
-		the_job_hotkey()
+		the_job('hotkey')
 	if keyboard.is_pressed('ctrl') and keyboard.is_pressed(HOTKEY_EXIT):
 		print('Manual exit.')
 		break
