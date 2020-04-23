@@ -124,14 +124,10 @@ time_to_act = _time_to_act.strftime("%Y-%m-%d %H:%M:%S")
 while True: 
 	_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-	if _now != time_to_act:
-		pass
 	if _now == time_to_act:
 		the_job('auto')
-		_time_to_act = _time_to_act + timedelta(seconds=INTERVAL)
+		_time_to_act = _time_to_act + timedel(INTERVAL)
 		time_to_act = _time_to_act.strftime("%Y-%m-%d %H:%M:%S")
-
-
 
 	ctrl = keyboard.is_pressed('ctrl') 
 	save_key = keyboard.is_pressed(HOTKEY_SAVE)
